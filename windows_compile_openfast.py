@@ -31,7 +31,7 @@ def compile_cmake_project(
         cmake_generator += " " + architecture
     command = ["cmake", "..", "-G" + cmake_generator]
     if cmake_flags is not None:
-        command.append(cmake_flags)
+        command += cmake_flags
     subprocess.run(command)
 
     # build with CMake
@@ -46,7 +46,7 @@ def compile_openfast(openfast_directory, cmake_generator="Visual Studio 15 2017"
         kwargs={
             "build_directory": "build32",
             "cmake_generator": cmake_generator,
-            "cmake_flags": "-DDOUBLE_PRECISION=OFF"
+            "cmake_flags": ["-DDOUBLE_PRECISION=OFF"]
         }
     )
     p64 = Process(
@@ -56,7 +56,7 @@ def compile_openfast(openfast_directory, cmake_generator="Visual Studio 15 2017"
             "build_directory": "build64",
             "cmake_generator": cmake_generator,
             "architecture": "Win64",
-            "cmake_flags": "-DDOUBLE_PRECISION=OFF"
+            "cmake_flags": ["-DDOUBLE_PRECISION=OFF"]
         }
     )
     p64_double = Process(
@@ -81,16 +81,16 @@ def compile_maplib(openfast_directory, cmake_generator="Visual Studio 15 2017"):
         openfast_directory,
         build_directory="build32",
         cmake_generator=cmake_generator,
-        cmake_flags="-DDOUBLE_PRECISION=OFF -DBUILD_SHARED_LIBS=ON",
-        target="maplib"
+        cmake_flags=["-DDOUBLE_PRECISION=OFF", "-DBUILD_SHARED_LIBS=ON"],
+        target="mapcpplib"
     )
     compile_cmake_project(
         openfast_directory,
         build_directory="build64",
         cmake_generator=cmake_generator,
         architecture="Win64",
-        cmake_flags="-DDOUBLE_PRECISION=OFF -DBUILD_SHARED_LIBS=ON",
-        target="maplib"
+        cmake_flags=["-DDOUBLE_PRECISION=OFF", "-DBUILD_SHARED_LIBS=ON"],
+        target="mapcpplib"
     )
 
 def compile_discon(discon_directory, cmake_generator="Visual Studio 15 2017"):
@@ -134,11 +134,11 @@ def package_openfast(openfast_directory, target_directory, cmake_build_type="Rel
 def package_maplib(openfast_directory, target_directory, cmake_build_type="Release"):
     os.chdir(target_directory)
     shutil.copyfile(
-        os.path.join(openfast_directory, "build32", "modules-ext", "map", cmake_build_type, "maplib.dll"), 
+        os.path.join(openfast_directory, "build32", "modules-ext", "map", cmake_build_type, "mapcpplib.dll"), 
         os.path.join("MAP_Win32.dll")
     )
     shutil.copyfile(
-        os.path.join(openfast_directory, "build64", "modules-ext", "map", cmake_build_type, "maplib.dll"), 
+        os.path.join(openfast_directory, "build64", "modules-ext", "map", cmake_build_type, "mapcpplib.dll"), 
         os.path.join("MAP_x64.dll")
     )
 
@@ -179,6 +179,11 @@ if __name__=="__main__":
     tag = "v2.1.0"
     openfast_directory = "C:/Users/rmudafor/Development/openfast"
     target_directory = "C:/Users/rmudafor/Development/{}".format(tag)
+
+    # make a fresh target directory
+    if os.path.isdir(target_directory):
+        shutil.rmtree(target_directory, ignore_errors=True)
+    os.makedirs(target_directory)
 
     # checkout the tag in git
     os.chdir(openfast_directory)
