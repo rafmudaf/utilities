@@ -188,6 +188,7 @@ if __name__=="__main__":
     # checkout the tag in git
     os.chdir(openfast_directory)
     subprocess.run(["git", "checkout", tag])
+    subprocess.run(["git", "submodule", "update"])
 
     # compile openfast and put in target directory
     compile_openfast(openfast_directory)
