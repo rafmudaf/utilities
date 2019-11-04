@@ -30,7 +30,7 @@ def clone_openfast(target_repo_url, target_branch="master", project_directory=No
 def compile_cmake_project(
         project_directory,
         build_directory="build",
-        cmake_generator="Visual Studio 15 2017",
+        cmake_generator="Visual Studio 16 2019",
         architecture=None,
         cmake_flags=None,
         cmake_build_type="Release",

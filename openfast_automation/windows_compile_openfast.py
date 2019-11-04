@@ -16,7 +16,7 @@ def rm_mkdir_cd(directory):
 def compile_cmake_project(
         project_directory,
         build_directory="build",
-        cmake_generator="Visual Studio 15 2017",
+        cmake_generator="Visual Studio 16 2019",
         architecture=None,
         cmake_flags=None,
         cmake_build_type="Release",
@@ -38,7 +38,7 @@ def compile_cmake_project(
     subprocess.run(["cmake", "--build", ".", "--config", cmake_build_type, "--target", target])
     subprocess.run(["cmake", "--build", ".", "--config", cmake_build_type, "--target", target])
 
-def compile_openfast(openfast_directory, cmake_generator="Visual Studio 15 2017"):
+def compile_openfast(openfast_directory, cmake_generator="Visual Studio 16 2019"):
     # compile OpenFAST in all build types and precisions as a statically linked executable
     p32 = Process(
         target=compile_cmake_project,
@@ -75,7 +75,7 @@ def compile_openfast(openfast_directory, cmake_generator="Visual Studio 15 2017"
     p64.join()
     p64_double.join()
 
-def compile_maplib(openfast_directory, cmake_generator="Visual Studio 15 2017"):
+def compile_maplib(openfast_directory, cmake_generator="Visual Studio 16 2019"):
     # reconfigure cmake with dynamic linking and compile the map dll
     compile_cmake_project(
         openfast_directory,
@@ -93,7 +93,7 @@ def compile_maplib(openfast_directory, cmake_generator="Visual Studio 15 2017"):
         target="mapcpplib"
     )
 
-def compile_discon(discon_directory, cmake_generator="Visual Studio 15 2017"):
+def compile_discon(discon_directory, cmake_generator="Visual Studio 16 2019"):
     p32 = Process(
         target=compile_cmake_project,
         args=(discon_directory,),
