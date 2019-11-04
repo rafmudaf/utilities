@@ -82,7 +82,7 @@ def update_baselines(project_directory, machine="windows", compiler="intel"):
 if __name__=="__main__":
     ## Configuration
     target_repo_url = "https://github.com/bjonkman/openfast"
-    target_branch = "f/Airfoil-interp"
+    target_branch = "f/SolveOption2_performance"
     local_directory_name = "/Users/rmudafor/Desktop/openfast_bonnie"
     ##
 
