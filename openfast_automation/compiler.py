@@ -74,8 +74,8 @@ def update_baselines(project_directory, machine="windows", compiler="intel"):
         os.path.join("glue-codes", "openfast", "CaseList.md"),
         os.path.join("..", "..", "build", "reg_tests", "glue-codes", "openfast"),
         os.path.join("glue-codes", "openfast"),
-        "macos",
-        "gnu"   
+        machine,
+        compiler
     ]
     subprocess.run(command, check=True)
 
