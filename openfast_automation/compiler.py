@@ -104,6 +104,7 @@ if __name__=="__main__":
     # Run the regression tests
     execute_rtest(
         local_directory_name,
+        binary="openfast",
         machine="macos",
         compiler="gnu"
     )
