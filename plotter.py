@@ -39,46 +39,57 @@ class Input():
         clean = list(filter(None, dirty))
         return clean
 
-    def read_data(self):
+    def read_data(self, skiplines, delimiter=" "):
         # skip the empty lines at the top
-        for _ in range(6):
+        for _ in range(skiplines):
             self.f.readline()
 
         # parse the channel names
-        line = self.f.readline().replace("\t", " ").rstrip("\n")
-        channels = self._string_to_list(line)
+        line = self.f.readline().replace("\t", delimiter).rstrip("\n")
+        channels = self._string_to_list(line, delimiter=delimiter)
+        channels = [c.strip(" ") for c in channels]
         for channel in channels:
             self.data[channel] = []
 
         # parse the units
         line = self.f.readline().replace("\t", " ").rstrip("\n")
-        for i, unit in enumerate(self._string_to_list(line)):
+        for i, unit in enumerate(self._string_to_list(line, delimiter=delimiter)):
             self.units[channels[i]] = unit
 
         for line in self.f:
-            linelist = self._string_to_list(line.rstrip("\n"), "\t")
+            linelist = self._string_to_list(line.rstrip("\n"), delimiter=delimiter)
             for i, element in enumerate(linelist):
                 self.data[channels[i]].append(float(element))
 
     def plot(self, title, xchannel, ychannels):
-        plot = Plot(title, xchannel, self.units[xchannel], self.data[xchannel])
+        i0, iN = 0, -1
+        plot = Plot(title, xchannel, self.units[xchannel], self.data[xchannel][i0:iN])
         for channel in ychannels:
-            plot.plot(channel, self.units[channel], self.data[channel])
-        # plt.show()
+            plot.plot(channel, self.units[channel], self.data[channel][i0:iN])
     
     def show_plots(self):
         plt.show()
 
 if __name__=="__main__":
-    import sys
-    if len(sys.argv) < 4:
-        print("Input error. Usage: ./plotter filename title xchannel ychannel1 ychannel2 ... ychannelN")
-    else:
-        filename = sys.argv[1]
-        title = sys.argv[2]
-        xchannel = sys.argv[3]
-        ychannels = sys.argv[4:]
-        input_container = Input(filename)
-        input_container.read_data()
-        input_container.plot(title, xchannel, ychannels)
-        input_container.show_plots()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Plots time-series results, typically from OpenFAST.", prog="plotter")
+    parser.add_argument(dest="filename", help='Filename for where to get the time-series data.')
+    parser.add_argument(dest="title", help='Title for the plot.')
+    parser.add_argument(dest="xchannel", help='Name of the x-axis channel.')
+    parser.add_argument(dest='ychannels', nargs='+', help='Name of the y-axis channels.')
+    parser.add_argument(
+        '-s',
+        '--skip-lines',
+        type=int,
+        dest='skiplines',
+        help='Lines to skip before channel names.',
+        required=False,
+        default=6
+    )
+    args = parser.parse_args()
+
+    input_container = Input(args.filename)
+    input_container.read_data(args.skiplines)
+    input_container.plot(args.title, args.xchannel, args.ychannels)
+    input_container.show_plots()
